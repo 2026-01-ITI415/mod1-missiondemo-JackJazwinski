@@ -27,6 +27,12 @@ public class LevelManager : MonoBehaviour
     
     public void LoadLevel(int index)
     {
+        // Reset goal state whenever a new level is loaded
+        Goal.goalMet = false;
+
+        // Clean up all projectiles left in the scene
+        CleanupProjectiles();
+
         // Housekeeping – destroy old level
         if (currentLevelInstance != null)
         {
@@ -36,6 +42,16 @@ public class LevelManager : MonoBehaviour
         // Load new level
         currentLevelInstance = Instantiate(levelPrefabs[index]);
         currentLevelIndex = index;
+    }
+
+    private void CleanupProjectiles()
+    {
+        // Find all Projectile objects in the scene and destroy them
+        Projectile[] projectiles = FindObjectsOfType<Projectile>();
+        foreach (Projectile proj in projectiles)
+        {
+            Destroy(proj.gameObject);
+        }
     }
     public void NextLevel()
     {
