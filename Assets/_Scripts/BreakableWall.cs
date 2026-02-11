@@ -20,6 +20,11 @@ public class BreakableWall : MonoBehaviour
     {
         if (collision.gameObject.CompareTag("Projectile") && !isBreaking)
         {
+            if (GameManager.Instance != null)
+            {
+                GameManager.Instance.OnProjectileHitWall();
+            }
+
             StartCoroutine(FadeAndDestroy());
         }
     }

@@ -7,6 +7,10 @@ public class Goal : MonoBehaviour{
 	static public bool 	goalMet = false;
 
 	void OnTriggerEnter(Collider other) {
+		if (goalMet) {
+			return;
+		}
+
 		// Debug to confirm the trigger is firing and what hit it
 		Debug.Log("Goal.OnTriggerEnter with: " + other.name);
 
@@ -25,20 +29,12 @@ public class Goal : MonoBehaviour{
 			c.a = 0.75f;
 			mat.color = c;
 
-			// Tell the LevelManager to load the next level after a delay
-			if (LevelManager.Instance != null) {
-				StartCoroutine(LoadNextLevelAfterDelay(3f));
+			// Let the GameManager handle round/game-complete UI and level progression
+			if (GameManager.Instance != null) {
+				GameManager.Instance.OnGoalHit();
 			} else {
-				Debug.LogError("Goal reached by Projectile, but no LevelManager instance was found in the scene.");
+				Debug.LogError("Goal reached by Projectile, but no GameManager instance was found in the scene.");
 			}
-		}
-	}
-
-	IEnumerator LoadNextLevelAfterDelay(float delay)
-	{
-		yield return new WaitForSeconds(delay);
-		if (LevelManager.Instance != null) {
-			LevelManager.Instance.NextLevel();
 		}
 	}
 }

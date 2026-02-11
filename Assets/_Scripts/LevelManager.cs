@@ -10,6 +10,21 @@ public class LevelManager : MonoBehaviour
     private int currentLevelIndex = 0;
     private GameObject currentLevelInstance;
 
+    public int CurrentLevelIndex
+    {
+        get { return currentLevelIndex; }
+    }
+
+    public int TotalLevels
+    {
+        get { return levelPrefabs != null ? levelPrefabs.Length : 0; }
+    }
+
+    public bool IsLastLevel
+    {
+        get { return currentLevelIndex >= TotalLevels - 1; }
+    }
+
     private void Awake()
     {
         // Singleton pattern (easy access from anywhere)
@@ -27,6 +42,18 @@ public class LevelManager : MonoBehaviour
     
     public void LoadLevel(int index)
     {
+        if (levelPrefabs == null || levelPrefabs.Length == 0)
+        {
+            Debug.LogError("LevelManager has no level prefabs assigned.");
+            return;
+        }
+
+        if (index < 0 || index >= levelPrefabs.Length)
+        {
+            Debug.LogError("LevelManager received invalid level index: " + index);
+            return;
+        }
+
         // Reset goal state whenever a new level is loaded
         Goal.goalMet = false;
 
@@ -42,6 +69,11 @@ public class LevelManager : MonoBehaviour
         // Load new level
         currentLevelInstance = Instantiate(levelPrefabs[index]);
         currentLevelIndex = index;
+
+        if (GameManager.Instance != null)
+        {
+            GameManager.Instance.OnLevelLoaded();
+        }
     }
 
     private void CleanupProjectiles()
@@ -69,6 +101,11 @@ public class LevelManager : MonoBehaviour
     public void RestartLevel()
     {
         LoadLevel(currentLevelIndex);
+    }
+
+    public void RestartFromBeginning()
+    {
+        LoadLevel(0);
     }
     // Update is called once per frame
     void Update()
