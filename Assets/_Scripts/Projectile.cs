@@ -19,6 +19,7 @@ public class Projectile : MonoBehaviour{
     private Rigidbody rigid;
     // Start is called before the first frame update
     void Start(){
+        gameObject.tag = "Projectile"; 
         rigid = GetComponent<Rigidbody>();
         awake = true;
         prevPos = new Vector3(1000,1000,0);
