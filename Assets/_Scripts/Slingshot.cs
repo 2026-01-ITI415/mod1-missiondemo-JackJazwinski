@@ -68,7 +68,7 @@ public class Slingshot : MonoBehaviour{
         projRB.isKinematic = false;
         projRB.collisionDetectionMode = CollisionDetectionMode.Continuous;
         projRB.linearVelocity = -mouseDelta * velocityMult;
-        FollowCam.POI = projectile;
+        FollowCam.FocusOnCastleUntilProjectileStops(projectile);
         Instantiate<GameObject>(projLinePrefab, projectile.transform);
         projectile = null;
     }
