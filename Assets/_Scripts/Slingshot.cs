@@ -8,18 +8,31 @@ public class Slingshot : MonoBehaviour{
     public GameObject projectilePrefab;
     public float velocityMult = 10f;
     public GameObject projLinePrefab;
+    public float aimLineLength = 5f;
 
     [Header("Dynamic")]
     public GameObject launchPoint;
     public Vector3 launchPos;
     public GameObject projectile;
     public bool aimingMode;
+    public LineRenderer aimLine;
 
     void Awake(){
         Transform launchPointTrans = transform.Find("LaunchPoint");
         launchPoint = launchPointTrans.gameObject;
         launchPoint.SetActive(false);
         launchPos = launchPointTrans.position;
+
+        GameObject aimLineObj = new GameObject("AimLine");
+        aimLineObj.transform.SetParent(transform, false);
+        aimLine = aimLineObj.AddComponent<LineRenderer>();
+        aimLine.positionCount = 2;
+        aimLine.startWidth = 0.08f;
+        aimLine.endWidth = 0.08f;
+        aimLine.material = new Material(Shader.Find("Sprites/Default"));
+        aimLine.startColor = Color.red;
+        aimLine.endColor = Color.red;
+        aimLine.enabled = false;
     }
  
  void OnMouseEnter(){
@@ -41,6 +54,7 @@ public class Slingshot : MonoBehaviour{
     projectile.transform.position = launchPos;
 
     projectile.GetComponent<Rigidbody>().isKinematic = true;
+    aimLine.enabled = true;
  }
  void Update(){
 
@@ -60,10 +74,12 @@ public class Slingshot : MonoBehaviour{
 
     Vector3 projPos = launchPos + mouseDelta;
     projectile.transform.position = projPos;
+    UpdateAimLine(projPos, mouseDelta);
 
     if(Input.GetMouseButtonUp(0)){
 
         aimingMode = false;
+        aimLine.enabled = false;
         Rigidbody projRB = projectile.GetComponent<Rigidbody>();
         projRB.isKinematic = false;
         projRB.collisionDetectionMode = CollisionDetectionMode.Continuous;
@@ -72,5 +88,15 @@ public class Slingshot : MonoBehaviour{
         Instantiate<GameObject>(projLinePrefab, projectile.transform);
         projectile = null;
     }
+ }
+
+ void UpdateAimLine(Vector3 projPos, Vector3 mouseDelta){
+    if (aimLine == null) return;
+
+    Vector3 launchDir = (-mouseDelta).normalized;
+    Vector3 endPos = projPos + (launchDir * aimLineLength);
+
+    aimLine.SetPosition(0, projPos);
+    aimLine.SetPosition(1, endPos);
  }
 }
